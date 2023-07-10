@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  main_app:
+    build:
+      context: .
+      dockerfile: fastapi.Dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --reload
+    ports:
+      - "8000:8000"
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    ports:
+      - 15673:15672
+    environment:
+      RABBITMQ_DEFAULT_VHOST: vhost
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: fastapi.Dockerfile
+    command: celery -A main.celery worker --loglevel=info -Q video --concurrency=3
+    depends_on:
+      - rabbitmq
+      - main_app
+
+    stdin_open: true

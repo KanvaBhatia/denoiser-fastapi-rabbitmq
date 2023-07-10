@@ -1,0 +1,11 @@
+fastapi==0.73.0
+uvicorn[standard]==0.17.4
+celery==5.2.3
+flower==1.0.0
+httpx ==0.21.1
+torch==1.13
+torchaudio==0.13
+moviepy
+boto3
+DeepFilterLib==0.4.0
+deepfilternet==0.4.0
