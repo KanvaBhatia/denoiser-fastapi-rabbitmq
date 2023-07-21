@@ -6,15 +6,15 @@ from config.celery_utils import get_task_info
 router = APIRouter(prefix='/video', tags=['VideoProcessing'], responses={404: {"description": "Not found"}})
 
 
-@router.post("/")
+@router.get("/")
 def helloapi() -> dict:
     return {"Hello": "API"}
 
 
 
 @router.post("/process")
-async def process(video_url: str):
-    task = process_vid.apply_async(args=[video_url])
+async def process(video_url: str, meetingID: str, projectID: str):
+    task = process_vid.apply_async(args=[video_url, meetingID, projectID])
     return JSONResponse({"task_id": task.id})
 
 
