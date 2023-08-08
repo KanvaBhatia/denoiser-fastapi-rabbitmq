@@ -14,6 +14,7 @@ import moviepy.editor as mp
 import boto3
 import tempfile
 import requests
+from tqdm import tqdm
 
 
 config.load('config.ini')
@@ -82,7 +83,8 @@ def process_vid(self, video_url: List[str], meetingID: List[str], projectID: Lis
         print(f"Total length of audio = {len_audio} chunks = {num_chunks}")
         estimate = []
         split_tensors = torch.tensor_split(sample, int(num_chunks), dim = 1)
-        for i in range(len(split_tensors)):
+        for i in tqdm(range(len(split_tensors))):
+            print("Processing chunk ", i + 1)
             enhanced = enhance(model, df, split_tensors[i])
             enhanced = enhance(model, df, enhanced)
             lim = torch.linspace(0.0, 1.0, int(sr * 0.15)).unsqueeze(0)
@@ -97,7 +99,7 @@ def process_vid(self, video_url: List[str], meetingID: List[str], projectID: Lis
         print("Uploading to s3")
         key = "audio-denoised/enhanced.wav"
         # s3.upload_file('enhanced_aud.wav', "bigbuddyai-store",key, ExtraArgs = {'ACL' : "public-read"})
-        response = s3.Bucket("bigbuddyai-store").upload_file(Key=f"audio-denoised/{meetingID}/{projectID}/{projectID}.wav", Filename="enhanced_aud.wav")
+        response = s3.Bucket("bigbuddyai-store").upload_file(Key=f"audio-denoised/{meetingID}__{projectID}.wav", Filename="enhanced_aud.wav")
         # print(response)
         print("Uploaded to s3!")
         # os.chdir(old)
