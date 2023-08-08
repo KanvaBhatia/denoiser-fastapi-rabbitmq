@@ -52,8 +52,8 @@ def process_vid(self, video_url: List[str], meetingID: List[str], projectID: Lis
             aws_secret_access_key='Thc+a3JZZ+rKGeustv5qdvvVgbeEtCmHBlmX8Noh'
         )
 
-        input_vid = "input.webm"
-        output_file = "tmp.wav"
+        input_vid = meetingID+"__"+projectID+".webm"
+        output_file = meetingID+"__"+projectID+".wav"
         response = requests.get(video_url)
         with open(input_vid, 'wb') as f:
             f.write(response.content)
@@ -69,7 +69,7 @@ def process_vid(self, video_url: List[str], meetingID: List[str], projectID: Lis
         os.remove(output_file.replace('.wav', '.mp3'))
 
         print("File downloaded!")
-        wav_file = "tmp.wav"
+        wav_file = meetingID+"__"+projectID+".wav"
         print("Wav stored.")
         meta = AudioMetaData(-1, -1, -1, -1, "")
         sr = config("sr", 48000, int, section="df")
@@ -95,11 +95,11 @@ def process_vid(self, video_url: List[str], meetingID: List[str], projectID: Lis
         estimate = tuple(estimate)
         enhanced = torch.cat(estimate, dim = -1)
         sr = meta.sample_rate
-        save_audio("enhanced_aud.wav", enhanced, sr)
+        save_audio("enhanced"+meetingID+"__"+projectID+".wav", enhanced, sr)
         print("Uploading to s3")
-        key = "audio-denoised/enhanced.wav"
+        # key = "audio-denoised/enhanced.wav"
         # s3.upload_file('enhanced_aud.wav', "bigbuddyai-store",key, ExtraArgs = {'ACL' : "public-read"})
-        response = s3.Bucket("bigbuddyai-store").upload_file(Key=f"audio-denoised/{meetingID}__{projectID}.wav", Filename="enhanced_aud.wav")
+        response = s3.Bucket("bigbuddyai-store").upload_file(Key=f"audio-denoised/{meetingID}__{projectID}.wav", Filename="enhanced"+meetingID+"__"+projectID+".wav",ExtraArgs = {'ACL' : "public-read"})
         # print(response)
         print("Uploaded to s3!")
         # os.chdir(old)
