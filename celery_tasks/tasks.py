@@ -48,8 +48,8 @@ def process_vid(self, video_url: List[str], meetingID: List[str], projectID: Lis
         s3 = boto3.resource(
             service_name='s3',
             region_name='us-west-1',
-            aws_access_key_id='AKIAW2CLDMGV6S2ULCT4',
-            aws_secret_access_key='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'
+            aws_access_key_id='',
+            aws_secret_access_key=''
         )
 
         input_vid = meetingID+"__"+projectID+".webm"
@@ -98,8 +98,7 @@ def process_vid(self, video_url: List[str], meetingID: List[str], projectID: Lis
         save_audio("enhanced"+meetingID+"__"+projectID+".wav", enhanced, sr)
         print("Uploading to s3")
         # key = "audio-denoised/enhanced.wav"
-        # s3.upload_file('enhanced_aud.wav', "bigbuddyai-store",key, ExtraArgs = {'ACL' : "public-read"})
-        response = s3.Bucket("bigbuddy-videos-2").upload_file(Key=f"audio-denoised/{meetingID}__{projectID}.wav", Filename="enhanced"+meetingID+"__"+projectID+".wav",ExtraArgs = {'ACL' : "public-read"})
+        response = s3.Bucket("videos-2").upload_file(Key=f"audio-denoised/{meetingID}__{projectID}.wav", Filename="enhanced"+meetingID+"__"+projectID+".wav",ExtraArgs = {'ACL' : "public-read"})
         # print(response)
         print("Uploaded to s3!")
         # os.chdir(old)
